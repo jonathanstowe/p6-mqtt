@@ -6,7 +6,7 @@ use MQTT::Client::MyPack;
 
 has Int      $.keepalive-interval    is rw = 60;
 has Int      $.maximum-length        is rw = 2097152;  # 2 MB
-has Str      $.client-identifier     is rw = "perl6";
+has Str      $.client-identifier     is rw = "raku-" ~ $*PID.Str;
 has Str      $.server                is rw;
 has Int      $.port                  is rw = 1883;
 has Supply   $!messages;
@@ -56,6 +56,7 @@ method connect () {
         }
 
         my $initialized = $packets.grep(*.<type> == 2).head(1).Promise;
+
 
         $!connection.write: mypack "C m/(n/a* C C n n/a*)", 0x10,
             "MQIsdp", 3, 2, $!keepalive-interval, $!client-identifier;
@@ -131,7 +132,7 @@ multi method retain (Str $topic, Str $message) {
 
 method subscribe (Str $topic) returns Supply:D {
     $!connection.write: mypack "C m/(C C n/a* C)", 0x82,
-        0, 0, $topic, 0;
+        0, $topic.encode.bytes, $topic, 0;
 
     my $regex = filter-as-regex($topic);
 
@@ -269,7 +270,7 @@ handle, which may result in weird behaviour if the server sends out bad data.
 
 Most clients do not adhere to this part of the specifications.
 
-=back 
+=back
 
 =head1 LICENSE
 

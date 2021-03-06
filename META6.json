@@ -1,7 +1,8 @@
 {
     "perl": "6.*",
+    "raku": "6.*",
     "name": "MQTT::Client",
-    "version": "*",
+    "version": "0.0.2",
     "description": "Minimal MQTT v3 client interface",
     "author": "Juerd Waalboer",
     "provides": {
